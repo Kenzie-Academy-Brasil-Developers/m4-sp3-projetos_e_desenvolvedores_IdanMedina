@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es2016",
+    "module": "commonjs",
+    "typeRoots": ["src/@types", "node_modules/@types"],
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "exactOptionalPropertyTypes": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/*", "src/database/index.ts", "src/logic/developers.logic.ts", "src/interfaces/developers.interface.ts", "src/middlewares/developers.middleware.ts"],
+  "exclude": ["node_modules"]
+}
+
