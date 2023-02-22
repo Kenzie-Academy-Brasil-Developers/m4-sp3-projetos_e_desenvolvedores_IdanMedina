@@ -10,6 +10,11 @@ interface iDevResponse extends iDevRequest {
   developerInfoId: number | null;
 }
 
+interface iDevDataUpdate {
+    name?: string,
+    email?: string
+}
+
 type DevDataCreate = Pick<iDevResponse, "name" | "email">;
 type DevResult = QueryResult<iDevResponse>;
 type DevRequestKeys = "name" | "email";
@@ -37,6 +42,7 @@ type DevReaderResult = QueryResult<DevReader>;
 export {
   iDevRequest,
   iDevResponse,
+  iDevDataUpdate,
   DevDataCreate,
   DevResult,
   DevRequestKeys,

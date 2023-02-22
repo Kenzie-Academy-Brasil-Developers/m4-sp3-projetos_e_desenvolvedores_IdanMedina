@@ -8,6 +8,7 @@ import {
   DevInfoResult,
   DevReaderResult,
   DevResult,
+  iDevDataUpdate,
   iDevInfoRequest,
   iDevInfoResponse,
   iDevRequest,
@@ -93,21 +94,21 @@ const createDevInfo = async (
       FROM 
         developers 
       WHERE 
-      id = $1;`
-      const queryDevConfig: QueryConfig = {
-        text: queryCheck,
-        values: [id],
-      };
-  const queryUserResult: DevResult = await client.query(queryDevConfig);
-  const dev = queryUserResult.rows[0];
+      id = $1;`;
+    const queryDevConfig: QueryConfig = {
+      text: queryCheck,
+      values: [id],
+    };
+    const queryUserResult: DevResult = await client.query(queryDevConfig);
+    const dev = queryUserResult.rows[0];
 
-  if(dev.developerInfoId){
-    return res.status(400).json({
-      message: "Information already exists"
-    })
-  }
+    if (dev.developerInfoId) {
+      return res.status(400).json({
+        message: "Information already exists",
+      });
+    }
 
-   const queryDev: string = `
+    const queryDev: string = `
     UPDATE
       developers
     SET
@@ -116,14 +117,14 @@ const createDevInfo = async (
       id = $2
     RETURNING *;  
     `;
-    
+
     const queryConfig: QueryConfig = {
       text: queryDev,
       values: [queryResult.rows[0].id, id],
     };
-    
+
     const queryDevResult: DevResult = await client.query(queryConfig);
-    console.log(queryDevResult)
+    console.log(queryDevResult);
     return res.status(201).json(newDevInfos);
   } catch (error: any) {
     console.log(error);
@@ -175,6 +176,62 @@ const readDevs = async (req: Request, res: Response): Promise<Response> => {
   return res.status(201).json(queryResult.rows);
 };
 
+const updateDev = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const id: number = Number(req.params.id);
+    const devDataRequest: iDevRequest = req.body;
+    const devDataCreate: DevDataCreate = {
+      ...devDataRequest,
+    };
+    const { name, email } = devDataCreate;
+    let devData: iDevDataUpdate = { name, email };
+    
+    if (!name){
+      devData = { email }
+    };
+    if (!email){
+      devData = { name }
+    };
+    
+    const query: string = format(
+      `
+      UPDATE
+        developers
+      SET(%I) = ROW(%L)
+      WHERE
+        id = $1
+      RETURNING *;
+        `,
+      Object.keys(devData),
+      Object.values(devData)
+    );
+
+    const queryConfig: QueryConfig = {
+      text: query,
+      values: [id],
+    };
+    const queryResult: DevResult = await client.query(queryConfig);
+
+    const patchDev: iDevResponse = queryResult.rows[0];
+
+    return res.status(201).json(patchDev);
+  } catch (error: any) {
+    if (
+      error.message.includes(
+        'duplicate key value violates unique constraint "developers_email_key"'
+      )
+    ) {
+      return res.status(409).json({
+        message: "Email already exists",
+      });
+    }
+    console.log(error);
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
 const deleteDev = async (req: Request, res: Response): Promise<Response> => {
   const id: number = Number(req.params.id);
   const query: string = `
@@ -192,4 +249,4 @@ const deleteDev = async (req: Request, res: Response): Promise<Response> => {
   return res.status(201).json();
 };
 
-export { createDev, readDevs, readDev, deleteDev, createDevInfo };
+export { createDev, readDevs, readDev, deleteDev, createDevInfo, updateDev };

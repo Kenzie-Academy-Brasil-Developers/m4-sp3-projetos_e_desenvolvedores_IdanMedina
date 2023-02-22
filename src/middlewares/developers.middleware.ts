@@ -24,6 +24,27 @@ const checkPostBodyRequest = (
   return next();
 };
 
+const checkPatchDevBodyRequest = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Response | void => {
+  const keys: Array<string> = Object.keys(req.body);
+  const requiredKeys: Array<DevRequestKeys> = ["name", "email"];
+
+  const checkBodyKeys: boolean = requiredKeys.some((key: string) => {
+    return keys.includes(key);
+  });
+
+  if (!checkBodyKeys) {
+    return res.status(400).json({
+      message: `Required keys, at least one: ${requiredKeys}`,
+    });
+  }
+
+  return next();
+};
+
 const checkPostBodyDevInfoRequest = (
   req: Request,
   res: Response,
@@ -87,4 +108,4 @@ const checkIfDevIdExists = async (
   return next();
 };
 
-export { checkPostBodyRequest, checkPostBodyDevInfoRequest, checkIfDevIdExists };
+export { checkPostBodyRequest, checkPostBodyDevInfoRequest, checkPatchDevBodyRequest, checkIfDevIdExists };
