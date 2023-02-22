@@ -87,22 +87,43 @@ const createDevInfo = async (
 
     const newDevInfos: iDevInfoResponse = queryResult.rows[0];
 
-   /*  const queryDev: string = `
-     INSERT INTO
-      developers("developerInfoId")
-    VALUES
-      ($1)
+    const queryCheck: string = `
+      SELECT 
+        * 
+      FROM 
+        developers 
+      WHERE 
+      id = $1;`
+      const queryDevConfig: QueryConfig = {
+        text: queryCheck,
+        values: [id],
+      };
+  const queryUserResult: DevResult = await client.query(queryDevConfig);
+  const dev = queryUserResult.rows[0];
+
+  if(dev.developerInfoId){
+    return res.status(400).json({
+      message: "Information already exists"
+    })
+  }
+
+   const queryDev: string = `
+    UPDATE
+      developers
+    SET
+      "developerInfoId" = $1
     WHERE
-      id = $2;  
+      id = $2
+    RETURNING *;  
     `;
     
     const queryConfig: QueryConfig = {
       text: queryDev,
-      values: [Number(queryResult.rows[0].id), id],
+      values: [queryResult.rows[0].id, id],
     };
-    console.log(queryConfig)
+    
     const queryDevResult: DevResult = await client.query(queryConfig);
-    console.log(queryDevResult) */
+    console.log(queryDevResult)
     return res.status(201).json(newDevInfos);
   } catch (error: any) {
     console.log(error);
