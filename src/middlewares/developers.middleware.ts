@@ -38,8 +38,8 @@ const checkPostBodyDevInfoRequest = (
   const checkBodyKeys: boolean = requiredKeys.every((key: string) => {
     return keys.includes(key);
   });
-  const checkOSValues: boolean = requiredOSValues.every((key: string) => {
-    return OSValues.includes(key);
+  const checkOSValues: boolean = requiredOSValues.some((value: string) => {
+    return OSValues.includes(value);
   });
 
   if (!checkBodyKeys) {

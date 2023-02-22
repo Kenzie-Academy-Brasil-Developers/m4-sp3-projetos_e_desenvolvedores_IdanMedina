@@ -25,11 +25,11 @@ const createDev = async (req: Request, res: Response): Promise<Response> => {
 
     const query: string = format(
       `
-        INSERT INTO
+      INSERT INTO
         developers(%I)
-    VALUES
+      VALUES
         (%L)
-    RETURNING *;
+      RETURNING *;
         `,
       Object.keys(devData),
       Object.values(devData)
@@ -87,13 +87,13 @@ const createDevInfo = async (
 
     const newDevInfos: iDevInfoResponse = queryResult.rows[0];
 
-    const queryDev: string = `
-   /*  INSERT INTO
+   /*  const queryDev: string = `
+     INSERT INTO
       developers("developerInfoId")
     VALUES
       ($1)
     WHERE
-      id = $2; */  
+      id = $2;  
     `;
     
     const queryConfig: QueryConfig = {
@@ -102,7 +102,7 @@ const createDevInfo = async (
     };
     console.log(queryConfig)
     const queryDevResult: DevResult = await client.query(queryConfig);
-    console.log(queryDevResult)
+    console.log(queryDevResult) */
     return res.status(201).json(newDevInfos);
   } catch (error: any) {
     console.log(error);
