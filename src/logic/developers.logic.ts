@@ -1,9 +1,15 @@
 import { Request, Response } from "express";
+import { QueryConfig } from "pg";
 import format from "pg-format";
 import { client } from "../database";
 import {
   DevDataCreate,
+  DevInfoDataCreate,
+  DevInfoResult,
+  DevReaderResult,
   DevResult,
+  iDevInfoRequest,
+  iDevInfoResponse,
   iDevRequest,
   iDevResponse,
 } from "../interfaces/developers.interface";
@@ -35,10 +41,14 @@ const createDev = async (req: Request, res: Response): Promise<Response> => {
 
     return res.status(201).json(newDev);
   } catch (error: any) {
-    if(error.message.includes('duplicate key value violates unique constraint "developers_email_key"')){
+    if (
+      error.message.includes(
+        'duplicate key value violates unique constraint "developers_email_key"'
+      )
+    ) {
       return res.status(409).json({
-        message: "Email already exists"
-      })
+        message: "Email already exists",
+      });
     }
     console.log(error);
     return res.status(500).json({
@@ -47,10 +57,118 @@ const createDev = async (req: Request, res: Response): Promise<Response> => {
   }
 };
 
-const readDevs = async (req: Request, res: Response): Promise<Response> => {
+const createDevInfo = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  try {
+    const id: number = Number(req.params.id);
 
+    const devDataInfoRequest: iDevInfoRequest = req.body;
+    const devDataInfoCreate: DevInfoDataCreate = {
+      ...devDataInfoRequest,
+    };
+    const { developerSince, preferredOS } = devDataInfoCreate;
+    const devInfoData: DevInfoDataCreate = { developerSince, preferredOS };
+
+    const query: string = format(
+      `
+        INSERT INTO
+          developer_infos(%I)
+        VALUES
+          (%L)
+        RETURNING *;
+        `,
+      Object.keys(devInfoData),
+      Object.values(devInfoData)
+    );
+
+    const queryResult: DevInfoResult = await client.query(query);
+
+    const newDevInfos: iDevInfoResponse = queryResult.rows[0];
+
+    const queryDev: string = `
+   /*  INSERT INTO
+      developers("developerInfoId")
+    VALUES
+      ($1)
+    WHERE
+      id = $2; */  
+    `;
+    
+    const queryConfig: QueryConfig = {
+      text: queryDev,
+      values: [Number(queryResult.rows[0].id), id],
+    };
+    console.log(queryConfig)
+    const queryDevResult: DevResult = await client.query(queryConfig);
+    console.log(queryDevResult)
+    return res.status(201).json(newDevInfos);
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
+const readDev = async (req: Request, res: Response): Promise<Response> => {
+  const id: number = Number(req.params.id);
+
+  const query: string = `
+    SELECT 
+      dv.*,
+      di."developerSince",
+      di."preferredOS"
+    FROM
+      developers dv
+    JOIN
+      developer_infos di ON dv."developerInfoId" = di.id
+    WHERE
+      dv.id = $1
+  `;
+
+  const queryConfig: QueryConfig = {
+    text: query,
+    values: [id],
+  };
+  const queryResult: DevReaderResult = await client.query(queryConfig);
+  console.log(queryResult);
+  return res.status(201).json(queryResult.rows[0]);
+};
+
+const readDevs = async (req: Request, res: Response): Promise<Response> => {
+  const query: string = `
+    SELECT 
+     dv.*,
+     di."developerSince",
+     di."preferredOS"
+   FROM
+      developers dv
+    JOIN
+      developer_infos di ON dv."developerInfoId" = di.id
+  `;
+
+  const queryResult: DevResult = await client.query(query);
+
+  return res.status(201).json(queryResult.rows);
+};
+
+const deleteDev = async (req: Request, res: Response): Promise<Response> => {
+  const id: number = Number(req.params.id);
+  const query: string = `
+    DELETE FROM
+      developers
+    WHERE
+      id = $1
+  `;
+  const queryConfig: QueryConfig = {
+    text: query,
+    values: [id],
+  };
+  const queryResult: DevResult = await client.query(queryConfig);
 
   return res.status(201).json();
-}
+};
 
-export { createDev };
+export { createDev, readDevs, readDev, deleteDev, createDevInfo };

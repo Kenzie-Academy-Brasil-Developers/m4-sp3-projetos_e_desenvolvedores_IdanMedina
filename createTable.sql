@@ -6,6 +6,18 @@ CREATE TABLE IF NOT EXISTS developer_infos (
 	"preferredOS" OS NOT NULL
 );
 
+ALTER TABLE
+	developer_infos 
+ALTER COLUMN
+	"developerSince" 	
+DROP NOT NULL;
+
+ALTER TABLE
+	developer_infos 
+ALTER COLUMN
+	"preferredOS" 	
+DROP NOT NULL;
+
 CREATE TABLE IF NOT EXISTS developers (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(50) NOT NULL,
