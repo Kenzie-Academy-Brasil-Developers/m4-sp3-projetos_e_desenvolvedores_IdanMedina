@@ -62,13 +62,13 @@ const checkIfDevIdToProj = async (
 };
 
 const checkIfDevIdToTechProj = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> => {
-    const id: number = Number(req.params.id);
-  
-    const query: string = `
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response | void> => {
+  const id: number = Number(req.params.id);
+
+  const query: string = `
             SELECT
                 *
             FROM
@@ -76,19 +76,19 @@ const checkIfDevIdToTechProj = async (
             WHERE
                 id= $1;
         `;
-  
-    const queryConfig: QueryConfig = {
-      text: query,
-      values: [id],
-    };
-  
-    const queryResult: QueryResult = await client.query(queryConfig);
-    if (queryResult.rows.length === 0) {
-      return res.status(404).json({
-        message: "Developer ID not found",
-      });
-    }
-    return next();
+
+  const queryConfig: QueryConfig = {
+    text: query,
+    values: [id],
   };
+
+  const queryResult: QueryResult = await client.query(queryConfig);
+  if (queryResult.rows.length === 0) {
+    return res.status(404).json({
+      message: "Project not found",
+    });
+  }
+  return next();
+};
 
 export { checkPostProjBodyRequest, checkIfDevIdToProj, checkIfDevIdToTechProj };
