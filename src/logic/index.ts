@@ -6,7 +6,7 @@ import {
   updateDev,
 } from "./developers.logic";
 import { createDevInfo, updateDevInfo } from "./developer_infos.logic";
-import { createProject } from "./projects.logic";
+import { createProject, readProjects } from "./projects.logic";
 
 export {
   createDev,
@@ -16,5 +16,6 @@ export {
   updateDev,
   createDevInfo,
   updateDevInfo,
-  createProject
+  createProject,
+  readProjects,
 };

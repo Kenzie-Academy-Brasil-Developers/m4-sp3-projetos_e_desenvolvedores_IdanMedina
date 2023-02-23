@@ -7,6 +7,7 @@ import {
   deleteDev,
   readDev,
   readDevs,
+  readProjects,
   updateDev,
   updateDevInfo,
 } from "./logic";
@@ -30,11 +31,14 @@ app.post(
   checkPostBodyDevInfoRequest,
   createDevInfo
 );
-app.post("/projects", checkPostProjBodyRequest, checkIfDevIdToProj, createProject);
-
-
-
+app.post(
+  "/projects",
+  checkPostProjBodyRequest,
+  checkIfDevIdToProj,
+  createProject
+);
 app.get("/developers", readDevs);
+app.get("/projects", readProjects);
 app.get("/developers/:id", checkIfDevIdExists, readDev);
 app.patch(
   "/developers/:id",
