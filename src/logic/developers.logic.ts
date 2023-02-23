@@ -67,7 +67,7 @@ const readDev = async (req: Request, res: Response): Promise<Response> => {
       di."preferredOS" "developerInfoPreferredOS"
     FROM
       developers dv
-    JOIN
+    FULL OUTER JOIN
       developer_infos di ON dv."developerInfoId" = di.id
     WHERE
       dv.id = $1
@@ -91,9 +91,9 @@ const readDevs = async (req: Request, res: Response): Promise<Response> => {
       dv."developerInfoId",
       di."developerSince" "developerInfoDeveloperSince",
       di."preferredOS" "developerInfoPreferredOS"
-   FROM
+    FROM
       developers dv
-    JOIN
+    FULL OUTER JOIN
       developer_infos di ON dv."developerInfoId" = di.id
   `;
 
@@ -175,10 +175,4 @@ const deleteDev = async (req: Request, res: Response): Promise<Response> => {
   return res.status(201).json();
 };
 
-export {
-  createDev,
-  readDevs,
-  readDev,
-  deleteDev,
-  updateDev,
-};
+export { createDev, readDevs, readDev, deleteDev, updateDev };
