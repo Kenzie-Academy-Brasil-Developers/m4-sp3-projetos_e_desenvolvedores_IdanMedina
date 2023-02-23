@@ -1,7 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import { QueryConfig, QueryResult } from "pg";
 import { client } from "../database";
-import { DevInfoRequestKeys, DevInfoRequestOSValue, DevRequestKeys } from "../interfaces/developers.interface";
+import {
+  DevInfoRequestKeys,
+  DevInfoRequestOSValue,
+  DevRequestKeys,
+} from "../interfaces/developers.interface";
 
 const checkPostBodyRequest = (
   req: Request,
@@ -45,6 +49,47 @@ const checkPatchDevBodyRequest = (
   return next();
 };
 
+const checkPatchDevInfoBodyRequest = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Response | void => {
+  const keys: Array<string> = Object.keys(req.body);
+  const OSValues: Array<string> = Object.values(req.body);
+
+  const requiredKeys: Array<DevInfoRequestKeys> = [
+    "developerSince",
+    "preferredOS",
+  ];
+  const requiredOSValues: Array<DevInfoRequestOSValue> = [
+    "Linux",
+    "Windows",
+    "MacOS",
+  ];
+
+  const checkBodyKeys: boolean = requiredKeys.some((key: string) => {
+    return keys.includes(key);
+  });
+
+  const checkOSValues: boolean = requiredOSValues.some((value: string) => {
+    return OSValues.includes(value);
+  });
+
+  if (!checkBodyKeys) {
+    return res.status(400).json({
+      message: `Required keys, at least one: ${requiredKeys}`,
+    });
+  }
+
+  if (!checkOSValues) {
+    return res.status(400).json({
+      message: `Required preferred Operational Systems are, at least one: ${requiredOSValues}`,
+    });
+  }
+
+  return next();
+};
+
 const checkPostBodyDevInfoRequest = (
   req: Request,
   res: Response,
@@ -52,9 +97,16 @@ const checkPostBodyDevInfoRequest = (
 ): Response | void => {
   const keys: Array<string> = Object.keys(req.body);
   const OSValues: Array<string> = Object.values(req.body);
-  
-  const requiredKeys: Array<DevInfoRequestKeys> = ["developerSince", "preferredOS"];
-  const requiredOSValues: Array<DevInfoRequestOSValue> = ["Linux", "Windows", "MacOS"];
+
+  const requiredKeys: Array<DevInfoRequestKeys> = [
+    "developerSince",
+    "preferredOS",
+  ];
+  const requiredOSValues: Array<DevInfoRequestOSValue> = [
+    "Linux",
+    "Windows",
+    "MacOS",
+  ];
 
   const checkBodyKeys: boolean = requiredKeys.every((key: string) => {
     return keys.includes(key);
@@ -108,4 +160,10 @@ const checkIfDevIdExists = async (
   return next();
 };
 
-export { checkPostBodyRequest, checkPostBodyDevInfoRequest, checkPatchDevBodyRequest, checkIfDevIdExists };
+export {
+  checkPostBodyRequest,
+  checkPostBodyDevInfoRequest,
+  checkPatchDevBodyRequest,
+  checkPatchDevInfoBodyRequest,
+  checkIfDevIdExists,
+};

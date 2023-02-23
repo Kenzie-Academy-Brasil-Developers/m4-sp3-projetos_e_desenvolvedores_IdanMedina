@@ -11,8 +11,8 @@ interface iDevResponse extends iDevRequest {
 }
 
 interface iDevDataUpdate {
-    name?: string,
-    email?: string
+  name?: string;
+  email?: string;
 }
 
 type DevDataCreate = Pick<iDevResponse, "name" | "email">;
@@ -29,8 +29,8 @@ interface iDevInfoResponse extends iDevInfoRequest {
 }
 
 interface iDevInfoDataUpdate {
-    developerSince?: string,
-    preferredOS?: string
+  developerSince?: string;
+  preferredOS?: string;
 }
 
 type DevInfoDataCreate = Pick<

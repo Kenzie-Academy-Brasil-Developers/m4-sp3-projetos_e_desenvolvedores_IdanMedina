@@ -159,7 +159,7 @@ const readDev = async (req: Request, res: Response): Promise<Response> => {
     values: [id],
   };
   const queryResult: DevReaderResult = await client.query(queryConfig);
-  console.log(queryResult);
+
   return res.status(201).json(queryResult.rows[0]);
 };
 
@@ -245,7 +245,23 @@ const updateDevInfo = async (
 ): Promise<Response> => {
   try {
     const id: number = Number(req.params.id);
-    
+
+    const queryDev: string = `
+      SELECT
+        *
+      FROM
+        developers
+      WHERE
+        id =$1
+    `;
+    const queryDevConfig: QueryConfig = {
+      text: queryDev,
+      values: [id],
+    };
+
+    const queryDevResult: DevResult = await client.query(queryDevConfig);
+    console.log(queryDevResult.rows[0]);
+
     const devDataInfoRequest: iDevInfoRequest = req.body;
     const devDataInfoCreate: DevInfoDataCreate = {
       ...devDataInfoRequest,
@@ -266,7 +282,7 @@ const updateDevInfo = async (
         developer_infos
       SET(%I) = ROW(%L)
       WHERE
-        x---id = $1---x
+        id = $1
       RETURNING *;
         `,
       Object.keys(devDataInfo),
@@ -275,11 +291,11 @@ const updateDevInfo = async (
 
     const queryConfig: QueryConfig = {
       text: query,
-      values: [id],
+      values: [queryDevResult.rows[0].developerInfoId],
     };
 
     const queryResult: DevInfoResult = await client.query(queryConfig);
-
+    console.log(queryResult.rows[0]);
     const patchDevInfos: iDevInfoResponse = queryResult.rows[0];
 
     return res.status(201).json(patchDevInfos);
@@ -308,4 +324,12 @@ const deleteDev = async (req: Request, res: Response): Promise<Response> => {
   return res.status(201).json();
 };
 
-export { createDev, readDevs, readDev, deleteDev, createDevInfo, updateDev, updateDevInfo };
+export {
+  createDev,
+  readDevs,
+  readDev,
+  deleteDev,
+  createDevInfo,
+  updateDev,
+  updateDevInfo,
+};
