@@ -9,6 +9,7 @@ import {
   DevReaderResult,
   DevResult,
   iDevDataUpdate,
+  iDevInfoDataUpdate,
   iDevInfoRequest,
   iDevInfoResponse,
   iDevRequest,
@@ -139,9 +140,12 @@ const readDev = async (req: Request, res: Response): Promise<Response> => {
 
   const query: string = `
     SELECT 
-      dv.*,
-      di."developerSince",
-      di."preferredOS"
+      dv.id "developerID",
+      dv.name "developerName",
+      dv.email "developerEmail",
+      dv."developerInfoId",
+      di."developerSince" "developerInfoDeveloperSince",
+      di."preferredOS" "developerInfoPreferredOS"
     FROM
       developers dv
     JOIN
@@ -162,9 +166,12 @@ const readDev = async (req: Request, res: Response): Promise<Response> => {
 const readDevs = async (req: Request, res: Response): Promise<Response> => {
   const query: string = `
     SELECT 
-     dv.*,
-     di."developerSince",
-     di."preferredOS"
+      dv.id "developerID",
+      dv.name "developerName",
+      dv.email "developerEmail",
+      dv."developerInfoId",
+      di."developerSince" "developerInfoDeveloperSince",
+      di."preferredOS" "developerInfoPreferredOS"
    FROM
       developers dv
     JOIN
@@ -185,14 +192,14 @@ const updateDev = async (req: Request, res: Response): Promise<Response> => {
     };
     const { name, email } = devDataCreate;
     let devData: iDevDataUpdate = { name, email };
-    
-    if (!name){
-      devData = { email }
-    };
-    if (!email){
-      devData = { name }
-    };
-    
+
+    if (!name) {
+      devData = { email };
+    }
+    if (!email) {
+      devData = { name };
+    }
+
     const query: string = format(
       `
       UPDATE
@@ -232,6 +239,58 @@ const updateDev = async (req: Request, res: Response): Promise<Response> => {
   }
 };
 
+const updateDevInfo = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  try {
+    const id: number = Number(req.params.id);
+    
+    const devDataInfoRequest: iDevInfoRequest = req.body;
+    const devDataInfoCreate: DevInfoDataCreate = {
+      ...devDataInfoRequest,
+    };
+    const { developerSince, preferredOS } = devDataInfoCreate;
+    let devDataInfo: iDevInfoDataUpdate = { developerSince, preferredOS };
+
+    if (!developerSince) {
+      devDataInfo = { preferredOS };
+    }
+    if (!preferredOS) {
+      devDataInfo = { developerSince };
+    }
+
+    const query: string = format(
+      `
+      UPDATE
+        developer_infos
+      SET(%I) = ROW(%L)
+      WHERE
+        x---id = $1---x
+      RETURNING *;
+        `,
+      Object.keys(devDataInfo),
+      Object.values(devDataInfo)
+    );
+
+    const queryConfig: QueryConfig = {
+      text: query,
+      values: [id],
+    };
+
+    const queryResult: DevInfoResult = await client.query(queryConfig);
+
+    const patchDevInfos: iDevInfoResponse = queryResult.rows[0];
+
+    return res.status(201).json(patchDevInfos);
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
 const deleteDev = async (req: Request, res: Response): Promise<Response> => {
   const id: number = Number(req.params.id);
   const query: string = `
@@ -249,4 +308,4 @@ const deleteDev = async (req: Request, res: Response): Promise<Response> => {
   return res.status(201).json();
 };
 
-export { createDev, readDevs, readDev, deleteDev, createDevInfo, updateDev };
+export { createDev, readDevs, readDev, deleteDev, createDevInfo, updateDev, updateDevInfo };

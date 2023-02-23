@@ -28,6 +28,11 @@ interface iDevInfoResponse extends iDevInfoRequest {
   id: number;
 }
 
+interface iDevInfoDataUpdate {
+    developerSince?: string,
+    preferredOS?: string
+}
+
 type DevInfoDataCreate = Pick<
   iDevInfoResponse,
   "developerSince" | "preferredOS"
@@ -48,6 +53,7 @@ export {
   DevRequestKeys,
   iDevInfoRequest,
   iDevInfoResponse,
+  iDevInfoDataUpdate,
   DevInfoDataCreate,
   DevInfoRequestKeys,
   DevInfoRequestOSValue,

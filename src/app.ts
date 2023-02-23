@@ -1,6 +1,6 @@
 import express, { Application } from "express";
 import { startDatabase } from "./database";
-import { createDev, createDevInfo, deleteDev, readDev, readDevs, updateDev } from "./logic/developers.logic";
+import { createDev, createDevInfo, deleteDev, readDev, readDevs, updateDev, updateDevInfo } from "./logic/developers.logic";
 import { checkIfDevIdExists, checkPatchDevBodyRequest, checkPostBodyDevInfoRequest, checkPostBodyRequest } from "./middlewares/developers.middleware";
 
 const app: Application = express();
@@ -11,7 +11,7 @@ app.post("/developers/:id/infos", checkIfDevIdExists, checkPostBodyDevInfoReques
 app.get("/developers", readDevs);
 app.get("/developers/:id", checkIfDevIdExists, readDev);
 app.patch("/developers/:id", checkIfDevIdExists, checkPatchDevBodyRequest, updateDev);
-app.patch("/developers/:id/infos");
+app.patch("/developers/:id/infos", updateDevInfo);
 app.delete("/developers/:id", checkIfDevIdExists, deleteDev);
 
 app.listen(3000, async () => {
