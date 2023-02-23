@@ -8,14 +8,14 @@ import {
   readDevs,
   updateDev,
   updateDevInfo,
-} from "./logic/developers.logic";
+} from "./logic";
 import {
   checkIfDevIdExists,
   checkPatchDevBodyRequest,
+  checkPostBodyRequest,
   checkPatchDevInfoBodyRequest,
   checkPostBodyDevInfoRequest,
-  checkPostBodyRequest,
-} from "./middlewares/developers.middleware";
+} from "./middlewares";
 
 const app: Application = express();
 app.use(express.json());
