@@ -6,9 +6,10 @@ import {
   iProjRequest,
   iProjResponse,
   ProjDataCreate,
-  ProjReaderResult,
+  ProjRequestKeys,
   ProjResult,
 } from "../interfaces";
+import { iProjDataUpdate } from "../interfaces/projects.interface";
 
 const createProject = async (
   req: Request,
@@ -121,4 +122,101 @@ const readProjects = async (req: Request, res: Response): Promise<Response> => {
   return res.status(201).json(queryResult.rows);
 };
 
-export { createProject, readProject, readProjects };
+const updateProject = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  try {
+    const id: number = Number(req.params.id);
+    const projDataRequest: iProjRequest = req.body;
+    const projDataCreate: ProjDataCreate = {
+      ...projDataRequest,
+    };
+
+    const keys: Array<string> = Object.keys(req.body);
+    const requiredKeys: Array<ProjRequestKeys> = [
+      "name",
+      "description",
+      "estimatedTime",
+      "repository",
+      "startDate",
+      "developerId",
+    ];
+    for (let data in projDataRequest){
+
+    }
+   
+    const {
+      name,
+      description,
+      estimatedTime,
+      repository,
+      startDate,
+      developerId,
+    } = projDataCreate;
+    let projData: ProjDataCreate = {
+      name,
+      description,
+      estimatedTime,
+      repository,
+      startDate,
+      developerId,
+    };
+
+    const query: string = format(
+      `
+      UPDATE
+        developers
+      SET(%I) = ROW(%L)
+      WHERE
+        id = $1
+      RETURNING *;
+        `,
+      Object.keys(id),
+      Object.values(id)
+    );
+
+    const queryConfig: QueryConfig = {
+      text: query,
+      values: [id],
+    };
+    const queryResult: ProjResult = await client.query(queryConfig);
+
+    const patchDev: iProjResponse = queryResult.rows[0];
+
+    return res.status(201).json(patchDev);
+  } catch (error: any) {
+    if (
+      error.message.includes(
+        'duplicate key value violates unique constraint "developers_email_key"'
+      )
+    ) {
+      return res.status(409).json({
+        message: "Email already exists",
+      });
+    }
+    console.log(error);
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
+const deleteProject = async (req: Request, res: Response): Promise<Response> => {
+  const id: number = Number(req.params.id);
+  const query: string = `
+    DELETE FROM
+      projects
+    WHERE
+      id = $1
+  `;
+  const queryConfig: QueryConfig = {
+    text: query,
+    values: [id],
+  };
+  const queryResult: ProjResult = await client.query(queryConfig);
+
+  return res.status(201).json();
+};
+
+export { createProject, readProject, readProjects, deleteProject };

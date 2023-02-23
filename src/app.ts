@@ -5,6 +5,7 @@ import {
   createDevInfo,
   createProject,
   deleteDev,
+  deleteProject,
   readDev,
   readDevs,
   readProject,
@@ -55,7 +56,14 @@ app.patch(
   checkPatchDevInfoBodyRequest,
   updateDevInfo
 );
+app.patch(
+  "/projects/:id",
+  checkPostProjBodyRequest,
+  checkIfDevIdToTechProj,
+  checkIfDevIdToProj
+);
 app.delete("/developers/:id", checkIfDevIdExists, deleteDev);
+app.delete("/projects/:id", checkIfDevIdToTechProj, deleteProject);
 
 app.listen(3000, async () => {
   await startDatabase();

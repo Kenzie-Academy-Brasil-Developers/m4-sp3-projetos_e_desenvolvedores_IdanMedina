@@ -18,6 +18,17 @@ const checkPostProjBodyRequest = (
     "developerId",
   ];
 
+  if (req.method === "PATCH") {
+    const checkBodyKeys: boolean = requiredKeys.some((key: string) => {
+      return keys.includes(key);
+    });
+    if (!checkBodyKeys) {
+      return res.status(400).json({
+        message: `Required keys are, at least: ${requiredKeys}`,
+      });
+    }
+    return next();
+  }
   const checkBodyKeys: boolean = requiredKeys.every((key: string) => {
     return keys.includes(key);
   });
@@ -72,7 +83,7 @@ const checkIfDevIdToTechProj = async (
             SELECT
                 *
             FROM
-                developers
+                projects
             WHERE
                 id= $1;
         `;

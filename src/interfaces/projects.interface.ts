@@ -1,6 +1,5 @@
 import { QueryResult } from "pg";
-import { iDevInfoResponse } from "./developer_infos.interface";
-import { iTechnology } from "./technlogies.interface";
+import { iTechnology } from "./";
 
 interface iProjRequest {
   name: string;
@@ -18,7 +17,12 @@ interface iProjResponse extends iProjRequest {
 
 interface iProjDataUpdate {
   name?: string;
-  email?: string;
+  description?: string;
+  estimatedTime?: string;
+  repository?: string;
+  startDate?: string;
+  endDate?: string;
+  developerId?: number | null;
 }
 
 type ProjDataCreate = Pick<
