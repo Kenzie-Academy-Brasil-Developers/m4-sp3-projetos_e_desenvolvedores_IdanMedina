@@ -3,6 +3,7 @@ import { startDatabase } from "./database";
 import {
   createDev,
   createDevInfo,
+  createProject,
   deleteDev,
   readDev,
   readDevs,
@@ -15,6 +16,8 @@ import {
   checkPostBodyRequest,
   checkPatchDevInfoBodyRequest,
   checkPostBodyDevInfoRequest,
+  checkPostProjBodyRequest,
+  checkIfDevIdToProj,
 } from "./middlewares";
 
 const app: Application = express();
@@ -27,6 +30,10 @@ app.post(
   checkPostBodyDevInfoRequest,
   createDevInfo
 );
+app.post("/projects", checkPostProjBodyRequest, checkIfDevIdToProj, createProject);
+
+
+
 app.get("/developers", readDevs);
 app.get("/developers/:id", checkIfDevIdExists, readDev);
 app.patch(

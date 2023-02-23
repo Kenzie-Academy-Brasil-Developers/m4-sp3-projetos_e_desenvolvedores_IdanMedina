@@ -8,8 +8,8 @@ import {
   iDevInfoDataUpdate,
   iDevInfoRequest,
   iDevInfoResponse,
-} from "../interfaces/developer_infos.interface";
-import { DevResult } from "../interfaces/developers.interface";
+  DevResult,
+} from "../interfaces";
 
 const createDevInfo = async (
   req: Request,
@@ -155,7 +155,4 @@ const updateDevInfo = async (
   }
 };
 
-export {
-  createDevInfo,
-  updateDevInfo
-};
+export { createDevInfo, updateDevInfo };

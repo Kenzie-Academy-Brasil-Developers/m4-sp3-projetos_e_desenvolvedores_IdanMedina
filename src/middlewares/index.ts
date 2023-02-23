@@ -7,6 +7,7 @@ import {
   checkPostBodyDevInfoRequest,
   checkPatchDevInfoBodyRequest,
 } from "./developer_infos.middleware";
+import { checkPostProjBodyRequest, checkIfDevIdToProj } from "./projects.middleware";
 
 export {
   checkPostBodyRequest,
@@ -14,4 +15,6 @@ export {
   checkIfDevIdExists,
   checkPostBodyDevInfoRequest,
   checkPatchDevInfoBodyRequest,
+  checkPostProjBodyRequest,
+  checkIfDevIdToProj
 };

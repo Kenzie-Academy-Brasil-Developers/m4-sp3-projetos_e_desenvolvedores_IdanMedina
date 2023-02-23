@@ -9,7 +9,7 @@ import {
   iDevDataUpdate,
   iDevRequest,
   iDevResponse,
-} from "../interfaces/developers.interface";
+} from "../interfaces";
 
 const createDev = async (req: Request, res: Response): Promise<Response> => {
   try {

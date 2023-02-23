@@ -1,11 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { QueryConfig, QueryResult } from "pg";
 import { client } from "../database";
-import { DevRequestKeys } from "../interfaces/developers.interface";
-import {
-  DevInfoRequestKeys,
-  DevInfoRequestOSValue,
-} from "../interfaces/developer_infos.interface";
+import { DevRequestKeys } from "../interfaces";
 
 const checkPostBodyRequest = (
   req: Request,
@@ -49,8 +45,6 @@ const checkPatchDevBodyRequest = (
   return next();
 };
 
-
-
 const checkIfDevIdExists = async (
   req: Request,
   res: Response,
@@ -81,8 +75,4 @@ const checkIfDevIdExists = async (
   return next();
 };
 
-export {
-  checkPostBodyRequest,
-  checkPatchDevBodyRequest,
-  checkIfDevIdExists
-};
+export { checkPostBodyRequest, checkPatchDevBodyRequest, checkIfDevIdExists };

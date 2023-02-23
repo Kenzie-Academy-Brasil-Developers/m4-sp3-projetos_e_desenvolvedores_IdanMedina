@@ -1,8 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import {
-  DevInfoRequestKeys,
-  DevInfoRequestOSValue,
-} from "../interfaces/developer_infos.interface";
+import { DevInfoRequestKeys, DevInfoRequestOSValue } from "../interfaces";
 
 const checkPatchDevInfoBodyRequest = (
   req: Request,
