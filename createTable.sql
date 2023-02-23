@@ -63,9 +63,3 @@ CREATE TABLE IF NOT EXISTS projects_technologies(
 	FOREIGN KEY ("projectId") REFERENCES projects(id),
 	FOREIGN KEY ("technologyId") REFERENCES technologies(id)
 );
-
-INSERT INTO
-        developers(%I)
-    VALUES
-        (%L)
-    RETURNING *;
