@@ -7,6 +7,7 @@ import {
   deleteDev,
   readDev,
   readDevs,
+  readProject,
   readProjects,
   updateDev,
   updateDevInfo,
@@ -19,6 +20,7 @@ import {
   checkPostBodyDevInfoRequest,
   checkPostProjBodyRequest,
   checkIfDevIdToProj,
+  checkIfDevIdToTechProj,
 } from "./middlewares";
 
 const app: Application = express();
@@ -39,6 +41,7 @@ app.post(
 );
 app.get("/developers", readDevs);
 app.get("/projects", readProjects);
+app.get("/projects/:id", checkIfDevIdToTechProj, readProject);
 app.get("/developers/:id", checkIfDevIdExists, readDev);
 app.patch(
   "/developers/:id",

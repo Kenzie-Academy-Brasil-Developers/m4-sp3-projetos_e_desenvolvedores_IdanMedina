@@ -23,7 +23,10 @@ import {
   ProjDataCreate,
   ProjResult,
   ProjRequestKeys,
+  ProjReader,
+  ProjReaderResult,
 } from "./projects.interface";
+import { iTechnology, iTechResponse } from "./technlogies.interface";
 
 export {
   iDevRequest,
@@ -46,4 +49,8 @@ export {
   ProjDataCreate,
   ProjResult,
   ProjRequestKeys,
+  ProjReader,
+  ProjReaderResult,
+  iTechnology,
+  iTechResponse,
 };

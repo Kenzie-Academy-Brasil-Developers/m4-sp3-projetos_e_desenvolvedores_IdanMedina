@@ -61,4 +61,34 @@ const checkIfDevIdToProj = async (
   return next();
 };
 
-export { checkPostProjBodyRequest, checkIfDevIdToProj };
+const checkIfDevIdToTechProj = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    const id: number = Number(req.params.id);
+  
+    const query: string = `
+            SELECT
+                *
+            FROM
+                developers
+            WHERE
+                id= $1;
+        `;
+  
+    const queryConfig: QueryConfig = {
+      text: query,
+      values: [id],
+    };
+  
+    const queryResult: QueryResult = await client.query(queryConfig);
+    if (queryResult.rows.length === 0) {
+      return res.status(404).json({
+        message: "Developer ID not found",
+      });
+    }
+    return next();
+  };
+
+export { checkPostProjBodyRequest, checkIfDevIdToProj, checkIfDevIdToTechProj };

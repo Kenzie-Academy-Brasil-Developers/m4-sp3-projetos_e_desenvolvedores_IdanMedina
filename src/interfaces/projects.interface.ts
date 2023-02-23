@@ -1,5 +1,6 @@
 import { QueryResult } from "pg";
 import { iDevInfoResponse } from "./developer_infos.interface";
+import { iTechnology } from "./technlogies.interface";
 
 interface iProjRequest {
   name: string;
@@ -15,7 +16,7 @@ interface iProjResponse extends iProjRequest {
   id: number;
 }
 
-interface iDevDataUpdate {
+interface iProjDataUpdate {
   name?: string;
   email?: string;
 }
@@ -38,16 +39,16 @@ type ProjRequestKeys =
   | "startDate"
   | "developerId";
 
-type DevReader = iProjResponse & iDevInfoResponse;
-type DevReaderResult = QueryResult<DevReader>;
+type ProjReader = iProjResponse & iTechnology;
+type ProjReaderResult = QueryResult<ProjReader>;
 
 export {
   iProjRequest,
   iProjResponse,
-  iDevDataUpdate,
+  iProjDataUpdate,
   ProjDataCreate,
   ProjResult,
   ProjRequestKeys,
-  DevReader,
-  DevReaderResult,
+  ProjReader,
+  ProjReaderResult,
 };

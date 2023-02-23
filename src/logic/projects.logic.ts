@@ -6,8 +6,9 @@ import {
   iProjRequest,
   iProjResponse,
   ProjDataCreate,
+  ProjReaderResult,
   ProjResult,
-} from "../interfaces/projects.interface";
+} from "../interfaces";
 
 const createProject = async (
   req: Request,
@@ -60,6 +61,40 @@ const createProject = async (
   }
 };
 
+const readProject = async (req: Request, res: Response): Promise<Response> => {
+  const id: number = Number(req.params.id);
+
+  const query: string = `
+        SELECT 
+            pr.id "projectID",
+            pr.name "projectName",
+            pr.description "projectDescription",
+            pr."estimatedTime" "projectEstimatedTime",
+            pr."repository" "projectRepository",
+            pr."startDate" "projectStartDate",
+            pr."endDate" "projectEndDate",
+            pr."developerId" "projectDeveloperId",
+            pt."technologyId",
+            te.name "technologyName"
+        FROM
+            projects_technologies pt
+        FULL OUTER JOIN
+            projects pr ON pt."projectId" = pr.id
+        LEFT JOIN
+            technologies te ON pt."technologyId" = te.id
+        WHERE
+            pr.id = $1
+    `;
+
+  const queryConfig: QueryConfig = {
+    text: query,
+    values: [id],
+  };
+  const queryResult: ProjResult = await client.query(queryConfig);
+
+  return res.status(201).json(queryResult.rows[0]);
+};
+
 const readProjects = async (req: Request, res: Response): Promise<Response> => {
   const query: string = `
       SELECT 
@@ -67,17 +102,17 @@ const readProjects = async (req: Request, res: Response): Promise<Response> => {
         pr.name "projectName",
         pr.description "projectDescription",
         pr."estimatedTime" "projectEstimatedTime",
-        pr."repository" "developerRepository",
-        pr."startDate" "developerStartDate",
-        pr."endDate" "developerEndDate",
-        pr."developerId" "developerDeveloperId",
-        pt."technologyId" "developerDeveloperId",
+        pr."repository" "projectRepository",
+        pr."startDate" "projectStartDate",
+        pr."endDate" "projectEndDate",
+        pr."developerId" "projectDeveloperId",
+        pt."technologyId",
         te.name "technologyName"
       FROM
         projects_technologies pt
       FULL OUTER JOIN
         projects pr ON pt."projectId" = pr.id
-      FULL OUTER JOIN
+      LEFT JOIN
         technologies te ON pt."technologyId" = te.id
     `;
 
@@ -86,4 +121,4 @@ const readProjects = async (req: Request, res: Response): Promise<Response> => {
   return res.status(201).json(queryResult.rows);
 };
 
-export { createProject, readProjects };
+export { createProject, readProject, readProjects };
